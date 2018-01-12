@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 
 import logging
-import gobject
+from gi.repository import GObject
 import evdev
 
 from mopidy.core import PlaybackState
@@ -193,7 +193,7 @@ class EvtDevAgent(object):
             pass
 
     def _register_refresh_timeout(self):
-        tag = gobject.timeout_add(int(self.refresh * 1000),
+        tag = GObject.timeout_add(int(self.refresh * 1000),
                                   self._refresh_timeout_callback)
         self.event_sources['timeout'] = tag
         logger.debug('Event sources: %s', self.event_sources)
@@ -203,7 +203,7 @@ class EvtDevAgent(object):
             if (device_name not in self.event_sources.keys()):
                 logger.debug('Adding io watch for: %s', device_name)
                 device = self.curr_input_devices[device_name]
-                tag = gobject.io_add_watch(device.fd, gobject.IO_IN,
+                tag = GObject.io_add_watch(device.fd, GObject.IO_IN,
                                            self._fd_ready_callback,
                                            device)
                 self.event_sources[device_name] = tag
@@ -212,7 +212,7 @@ class EvtDevAgent(object):
     def _deregister_event_source(self, source):
         tag = self.event_sources.pop(source, None)
         if (tag is not None):
-            gobject.source_remove(tag)
+            GObject.source_remove(tag)
 
     def _deregister_event_sources(self):
         for source in self.event_sources.keys():
